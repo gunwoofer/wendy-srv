@@ -1,42 +1,46 @@
+import os
+from datetime import datetime
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
-import os
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__)) 
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'database.db')
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(BASE_DIR, "database.db")
 db = SQLAlchemy(app)
 
-@app.route('/createWeekend', methods=['POST'])
+
+@app.route("/createWeekend", methods=["POST"])
 def create_weekend():
     data = request.get_json()
-    name = data.get('name')
-    creator = data.get('creator')
+    name = data.get("name")
+    creator = data.get("creator")
     weekend = Weekend(name=name, participants=creator)
     db.session.add(weekend)
     db.session.commit()
-    return jsonify(
-        greeting="Weekend created !"
-    )
+    return jsonify(greeting="Weekend created !")
 
-@app.route('/getWeekends', methods=['POST'])
+
+@app.route("/getWeekends", methods=["POST"])
 def get_weekends():
     data = request.get_json()
-    email = data.get('email')
+    email = data.get("email")
     weekends = Weekend.query.filter_by(participants=email).all()
     weekend_list = []
     for weekend in weekends:
-        weekend_list.append({
-            'id': weekend.id,
-            'name': weekend.name,
-            'address': weekend.address,
-            'date': weekend.date,
-            'participants': weekend.participants
-        })
+        weekend_list.append(
+            {
+                "id": weekend.id,
+                "name": weekend.name,
+                "address": weekend.address,
+                "date": weekend.date,
+                "participants": weekend.participants,
+            }
+        )
     return jsonify(weekend_list)
+
 
 class Weekend(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -53,5 +57,5 @@ class Weekend(db.Model):
 with app.app_context():
     db.create_all()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(port=3000)
