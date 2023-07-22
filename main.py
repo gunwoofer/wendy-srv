@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-
+import json
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
@@ -20,7 +20,7 @@ def create_weekend():
     weekend = Weekend(name=name, participants=creator)
     db.session.add(weekend)
     db.session.commit()
-    return jsonify(greeting="Weekend created !")
+    return weekend.as_dict()
 
 
 @app.route("/getWeekends", methods=["POST"])
@@ -51,7 +51,9 @@ class Weekend(db.Model):
 
     def __repr__(self):
         return f"Weekend(name='{self.name}', address='{self.address}', date='{self.date}', participants='{self.participants}')"
-
+    
+    def as_dict(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 # Crée les table dans sqlite
 with app.app_context():
