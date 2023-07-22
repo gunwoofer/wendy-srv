@@ -1,4 +1,6 @@
 myenv/
+database.db
+*.db
 .vscode
 __pycache__
 
