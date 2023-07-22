@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-
+import json
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
@@ -29,14 +29,23 @@ def create_weekend():
         )
         db.session.add(weekend)
         db.session.commit()
-        return jsonify(greeting="Weekend created !")
+        weekend.participants = weekend.participants.split(';')
+        return weekend.as_dict()
     else:  # On veut rejoindre un chalet
         for weekend in weekends:
             if creator not in weekend.participants:
                 weekend.participants += f";{creator}"
                 db.session.merge(weekend)
                 db.session.commit()
-                return jsonify(greeting="Weekend joined !")
+                weekend = Weekend(
+                    id=weekend.id,
+                    name=weekend.name,
+                    address=weekend.address,
+                    date=weekend.date,
+                    participants=weekend.participants.split(';'),
+                    sharing_code=weekend.sharing_code
+                )
+                return weekend.as_dict()
             else:
                 return jsonify(greeting="You already are in the weekend!")
 
@@ -86,7 +95,9 @@ class Weekend(db.Model):
 
     def __repr__(self):
         return f"Weekend(name='{self.name}', address='{self.address}', date='{self.date}', participants='{self.participants}', sharing_code='{self.sharing_code}')"
-
+    
+    def as_dict(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 # Crée les table dans sqlite
 with app.app_context():
