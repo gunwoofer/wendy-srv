@@ -1,103 +1,39 @@
-import os
-from datetime import datetime
-import json
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
-import shortuuid
+from flask import jsonify, request
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-app = Flask(__name__)
-CORS(app)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
-    BASE_DIR, "database.db"
-)
-db = SQLAlchemy(app)
+
+from wendy.application import app
+from wendy.application import db
+from wendy.services.weekend import create_weekend
+from wendy.services.weekend import join_weekend
+from wendy.services.weekend import get_weekends
 
 
 @app.route("/createWeekend", methods=["POST"])
-def create_weekend():
+def create_weekend_route():
     data = request.get_json()
     name = data.get("name")
     creator = data.get("creator")
-    weekends = Weekend.query.filter_by(sharing_code=name).all()
-    if len(weekends) == 0:  # On veut creer un chalet
-        weekend = Weekend(
-            name=name,
-            participants=creator,
-            sharing_code=shortuuid.ShortUUID().random(length=10),
-        )
-        db.session.add(weekend)
-        db.session.commit()
-        weekend.participants = weekend.participants.split(';')
-        return weekend.as_dict()
-    else:  # On veut rejoindre un chalet
-        for weekend in weekends:
-            if creator not in weekend.participants:
-                weekend.participants += f";{creator}"
-                db.session.merge(weekend)
-                db.session.commit()
-                weekend = Weekend(
-                    id=weekend.id,
-                    name=weekend.name,
-                    address=weekend.address,
-                    date=weekend.date,
-                    participants=weekend.participants.split(';'),
-                    sharing_code=weekend.sharing_code
-                )
-                return weekend.as_dict()
-            else:
-                return jsonify(greeting="You already are in the weekend!")
+    return create_weekend(name, creator)
+
+
+@app.route("/joinWeekend", methods=["POST"])
+def join_weekend_route():
+    data = request.get_json()
+    name = data.get("name")
+    creator = data.get("creator")
+    try:
+        return join_weekend(sharing_code=name, user=creator)
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 
 @app.route("/getWeekends", methods=["POST"])
-def get_weekends():
+def get_weekends_route():
     data = request.get_json()
     email = data.get("email")
-    from sqlalchemy import select
-    from sqlalchemy.sql import text
+    weekends = get_weekends(email)
+    return jsonify(weekends)
 
-    weekends = db.session.execute(text("SELECT * from weekend"))
-    # weekends = Weekend.query.filter_by(participants=email).all()
-    weekend_list = []
-    for weekend_tuple in weekends:
-        weekend = Weekend(
-            id=weekend_tuple[0],
-            name=weekend_tuple[1],
-            address=weekend_tuple[2],
-            date=weekend_tuple[3],
-            participants=weekend_tuple[4],
-            sharing_code=weekend_tuple[5],
-        )
-        participants = weekend.participants.split(";")
-        if email in participants:
-            print(participants)
-            weekend_list.append(
-                {
-                    "id": weekend.id,
-                    "name": weekend.name,
-                    "address": weekend.address,
-                    "date": weekend.date,
-                    "participants": participants,
-                    "sharing_code": weekend.sharing_code,
-                }
-            )
-    return jsonify(weekend_list)
-
-
-class Weekend(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    address = db.Column(db.String(200))
-    date = db.Column(db.DateTime, default=datetime.utcnow)
-    participants = db.Column(db.String(2000))
-    sharing_code = db.Column(db.String(10))
-
-    def __repr__(self):
-        return f"Weekend(name='{self.name}', address='{self.address}', date='{self.date}', participants='{self.participants}', sharing_code='{self.sharing_code}')"
-    
-    def as_dict(self):
-       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 # Crée les table dans sqlite
 with app.app_context():
