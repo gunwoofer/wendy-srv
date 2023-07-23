@@ -10,6 +10,8 @@ class Weekend(db.Model):
     date = db.Column(db.DateTime, default=datetime.utcnow)
     participants = db.Column(db.String(2000))
     sharing_code = db.Column(db.String(10))
+    tricount_link = db.Column(db.String(200))
+    reservation_link = db.Column(db.String(200))
 
     def __repr__(self):
         return f"Weekend(name='{self.name}', address='{self.address}', date='{self.date}', participants='{self.participants}', sharing_code='{self.sharing_code}')"
