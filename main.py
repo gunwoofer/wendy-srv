@@ -7,6 +7,7 @@ from wendy.services.weekend import create_weekend
 from wendy.services.weekend import join_weekend
 from wendy.services.weekend import get_weekends
 from wendy.services.weekend import get_weekend
+from wendy.services.weekend import updateWeekendById
 
 
 @app.route("/createWeekend", methods=["POST"])
@@ -41,6 +42,14 @@ def get_weekend_by_id(weekend_id):
         return get_weekend(weekend_id=weekend_id)
     except Exception as e:
         return jsonify({"error": str(e)})
+
+
+@app.route('/updateWeekend/<int:weekend_id>', methods=['PUT'])
+def update_weekend(weekend_id):
+    try:
+        return updateWeekendById(weekend_id, request.get_json())
+    except Exception as e:
+        return jsonify({"message": "Error occurred", "error": str(e)}), 500
 
 # Crée les table dans sqlite
 with app.app_context():
