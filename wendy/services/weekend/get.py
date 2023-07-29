@@ -9,14 +9,15 @@ def get_weekends(email: str):
     weekends = []
     for weekend_tuple in weekend_req:
         weekend = Weekend(
-            id=weekend_tuple[0],
-            name=weekend_tuple[1],
-            address=weekend_tuple[2],
-            date=weekend_tuple[3],
-            participants=weekend_tuple[4],
-            sharing_code=weekend_tuple[5],
-            tricount_link=weekend_tuple[6],
-            reservation_link=weekend_tuple[7]
+            id=weekend_tuple.id,
+            name=weekend_tuple.name,
+            address=weekend_tuple.address,
+            date_debut=weekend_tuple.date_debut,
+            date_fin=weekend_tuple.date_fin,
+            participants=weekend_tuple.participants,
+            sharing_code=weekend_tuple.sharing_code,
+            tricount_link=weekend_tuple.tricount_link,
+            reservation_link=weekend_tuple.reservation_link
         )
         participants = weekend.participants.split(";")
         if email in participants:
@@ -25,7 +26,8 @@ def get_weekends(email: str):
                     "id": weekend.id,
                     "name": weekend.name,
                     "address": weekend.address,
-                    "date": weekend.date,
+                    "date_debut": weekend.date_debut,
+                    "date_fin": weekend.date_fin,
                     "participants": participants,
                     "sharing_code": weekend.sharing_code,
                     "tricount_link": weekend.tricount_link,
@@ -44,7 +46,8 @@ def get_weekend(weekend_id):
         id= weekend.id,
         name= weekend.name,
         address= weekend.address,
-        date= weekend.date.strftime("%Y-%m-%d %H:%M:%S"),
+        date_debut = weekend.date_debut,
+        date_fin = weekend.date_fin,
         participants= participants,
         sharing_code= weekend.sharing_code,
         tricount_link= weekend.tricount_link,

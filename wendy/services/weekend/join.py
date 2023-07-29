@@ -16,7 +16,8 @@ def join_weekend(sharing_code: str, user: str):
                     id=weekend.id,
                     name=weekend.name,
                     address=weekend.address,
-                    date=weekend.date,
+                    date_debut=weekend.date_debut,
+                    date_fin=weekend.date_fin,
                     participants=weekend.participants.split(";"),
                     sharing_code=weekend.sharing_code,
                 )
