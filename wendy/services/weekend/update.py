@@ -1,5 +1,6 @@
 from wendy.application import db
 from wendy.models.weekend import Weekend
+from flask import jsonify
 
 def updateWeekendById(id, data_weekend):
     # Get the existing weekend record from the database
@@ -28,3 +29,17 @@ def updateWeekendById(id, data_weekend):
     weekend_object = weekend.as_dict()
     weekend_object.update({"participants": weekend.participants.split(';')})
     return weekend_object
+
+def updateWeekendPhotoById(id, path):
+    # Get the existing weekend record from the database
+    weekend: Weekend = Weekend.query.get(id)
+    if not weekend:
+        raise ValueError("Weekend not found")
+
+    # Update the weekend record with new data
+    weekend.photo_path = path
+
+    # Save the changes to the database
+    db.session.commit()
+
+    return jsonify({"message": "Image uploaded successfully."})

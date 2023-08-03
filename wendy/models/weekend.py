@@ -14,6 +14,7 @@ class Weekend(db.Model):
     sharing_code = db.Column(db.String(10))
     tricount_link = db.Column(db.String(200))
     reservation_link = db.Column(db.String(200))
+    photo_path = db.Column(db.String(200))
 
     def __repr__(self):
         return f"Weekend(name='{self.name}', address='{self.address}', date_debut='{self.date_debut}', date_fin='{self.date_fin}', participants='{self.participants}', sharing_code='{self.sharing_code}')"
