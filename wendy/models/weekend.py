@@ -9,7 +9,7 @@ class Weekend(db.Model):
     # date = db.Column(db.DateTime, default=datetime.utcnow)
     date_debut = db.Column(db.String(200))
     date_fin = db.Column(db.String(200))
-    creator = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
+    creator = db.Column(db.String(200), db.ForeignKey(User.id), nullable=False)
     sharing_code = db.Column(db.String(10))
     tricount_link = db.Column(db.String(200))
     reservation_link = db.Column(db.String(200))

@@ -6,8 +6,9 @@ class UserManager:
     def __init__(self):
         pass
 
-    def create_user(self, first_name: str, second_name: str, email: str):
+    def create_user(self, uid: str, first_name: str, second_name: str, email: str):
         user = User(
+            id=uid,
             first_name=first_name,
             second_name=second_name,
             email=email,

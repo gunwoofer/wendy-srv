@@ -2,7 +2,7 @@ from wendy.application import db
 
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(200), primary_key=True)
     first_name = db.Column(db.String(30), nullable=False)
     second_name = db.Column(db.String(30), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
