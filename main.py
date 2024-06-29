@@ -157,6 +157,12 @@ def add_user_to_car():
     except Exception as e:
         return jsonify({"message": "Error occurred", "error": str(e)}), 500
 
+@app.route("/updateDriverInCar", methods=["UPDATE"])
+def update_driver_in_car():
+    try:
+        return car_manager.update_driver_in_car(**request.get_json())
+    except Exception as e:
+        return jsonify({"message": "Error occurred", "error": str(e)}), 500
 
 # Crée les table dans sqlite
 with app.app_context():
