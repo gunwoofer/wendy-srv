@@ -14,6 +14,7 @@ class CarManager:
         user_id: int,
         name: str,
         max_person: str,
+        weekend_id: str,
         matricule: str = None,
         start_hour: str = None,
         start_address: str = None,
@@ -33,6 +34,7 @@ class CarManager:
             max_person=max_person,
             start_hour=start_hour,
             start_address=start_address,
+            weekend_id=weekend_id
         )
         db.session.add(car)
         db.session.commit()
@@ -132,3 +134,16 @@ class CarManager:
         user_in_car.is_driver = is_driver
         db.session.commit()
         return self.get_car(car_id)
+
+    def get_cars_in_weekend(self, weekend_id: int):
+        """
+        returns a list of cars in a weekend
+        :param weekend_id: the id of the weekend
+        """
+        cars_in_weekend = []
+        cars = Car.query.filter_by(weekend_id=weekend_id)
+        for car in cars:
+            participants = self.get_participants(car.car_id)
+            cars_in_weekend.append(car.to_dict(participants))
+
+        return cars_in_weekend

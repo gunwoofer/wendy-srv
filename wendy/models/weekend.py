@@ -21,7 +21,8 @@ class Weekend(db.Model):
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
-    def to_dict(self, participants):
+    def to_dict(self, participants, cars):
         weekend = self.as_dict()
         weekend["participants"] = participants
+        weekend["cars"] = cars
         return weekend

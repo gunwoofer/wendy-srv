@@ -7,7 +7,7 @@ from wendy.application import db
 from wendy.models.users_in_weekend import UsersInWeekend
 from wendy.models.weekend import Weekend
 from wendy.models.user import User
-
+from wendy.services.car_manager import CarManager
 
 class WeekendManager:
     def __init__(self):
@@ -75,9 +75,12 @@ class WeekendManager:
                 reservation_link=weekend_tuple.reservation_link,
             )
 
+            cars = CarManager().get_cars_in_weekend(weekend.id)
+
             participants = self.get_participants(weekend.id)
             if any(user_id == participant.get("id") for participant in participants):
-                weekends.append(weekend.to_dict(participants))
+                weekends.append(weekend.to_dict(participants, cars))
+                
         return weekends
 
     def get_weekend(self, weekend_id: int):
@@ -90,7 +93,8 @@ class WeekendManager:
             raise ValueError("Weekend not found")
 
         participants = self.get_participants(weekend_id)
-        return weekend.to_dict(participants)
+        cars = CarManager().get_cars_in_weekend(weekend_id)
+        return weekend.to_dict(participants, cars)
 
     def join_weekend(self, sharing_code: str, user_id: int):
         """
