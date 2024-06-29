@@ -126,7 +126,9 @@ class CarManager:
         return car.as_dict()
     
     def update_driver_in_car(self, car_id: int, user_id: str, is_driver: bool):
-        user_in_car = UsersInCar.query.filter_by(car=car_id, user=user_id)
+        user_in_car = UsersInCar.query.filter_by(car=car_id, user=user_id).first()
+        if not user_in_car:
+            raise ValueError(f"user {user_id} is not found in car {car_id}")
         user_in_car.is_driver = is_driver
         db.session.commit()
         return self.get_car(car_id)
